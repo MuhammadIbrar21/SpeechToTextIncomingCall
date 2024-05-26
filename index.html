@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Speech Recognition</title>
+  </head>
+  <body>
+    <script>
+      const recognition = new (window.SpeechRecognition ||
+        window.webkitSpeechRecognition)();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        window.ReactNativeWebView.postMessage(transcript);
+      };
+
+      recognition.onerror = (event) => {
+        window.ReactNativeWebView.postMessage("error: " + event.error);
+      };
+
+      function startRecognition() {
+        recognition.start();
+      }
+
+      function stopRecognition() {
+        recognition.stop();
+      }
+
+      window.addEventListener("message", (event) => {
+        if (event.data === "start") {
+          startRecognition();
+        } else if (event.data === "stop") {
+          stopRecognition();
+        }
+      });
+    </script>
+  </body>
+</html>
